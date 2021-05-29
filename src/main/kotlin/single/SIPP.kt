@@ -5,6 +5,7 @@ import TimePoint
 import java.util.*
 import kotlin.collections.HashMap
 import Timer
+import kotlin.math.abs
 
 class SIPP: PathFindingAlgo {
     override fun findPath(case: SingleBotCase): PathFindingAlgo.AlgoRes {
@@ -108,7 +109,7 @@ class SIPP: PathFindingAlgo {
     }
 
     private fun getH(point: Point, case: SingleBotCase): Long {
-        return (case.endPoint.x - point.x).toLong() + (case.endPoint.y - point.y)
+        return abs(case.endPoint.x - point.x).toLong() + abs(case.endPoint.y - point.y)
     }
 
     private fun toSafeTimeline(badTimeLine: List<Pair<Long, Long>>): List<Pair<Long, Long>> {

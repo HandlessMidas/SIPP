@@ -1,3 +1,4 @@
+import single.AStarWithTimeDimension
 import single.DijkstraWithTimeDimension
 import single.SIPP
 import single.SingleBotCase
@@ -19,16 +20,20 @@ fun main() {
 
     val dijFile = File("dijkstraSingle.csv")
     val sippFile = File("sippSingle.csv")
+    val astarFile = File("astarSingle.csv")
 
     dijFile.writeText("")
     sippFile.writeText("")
+    astarFile.writeText("");
     dijFile.writeText("test_name,path_length,open_cnt,closed_cnt,time_ms,obs_cnt\n")
     sippFile.writeText("test_name,path_length,open_cnt,closed_cnt,time_ms,obs_cnt\n")
+    astarFile.writeText("test_name,path_length,open_cnt,closed_cnt,time_ms,obs_cnt\n")
 
     val rand = Random(42)
 
     val dij = DijkstraWithTimeDimension()
     val sipp = SIPP()
+    val astar = AStarWithTimeDimension()
 
     files.forEach { file ->
         println("Processing $file")
@@ -46,9 +51,11 @@ fun main() {
 
             if (ress.path != null) {
                 val resd = dij.findPath(test)
+                val resa = astar.findPath(test)
 
                 dijFile.appendText("$file,${resd.path!!.size},${resd.openCnt},${resd.closedCnt},${resd.timeMs},${test.obstacles.size}\n")
                 sippFile.appendText("$file,${ress.path!!.size},${ress.openCnt},${ress.closedCnt},${ress.timeMs},${test.obstacles.size}\n")
+                astarFile.appendText("$file,${resa.path!!.size},${resa.openCnt},${resa.closedCnt},${resa.timeMs},${test.obstacles.size}\n")
             }
         }
     }
