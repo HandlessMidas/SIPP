@@ -6,6 +6,7 @@ import Point
 import TimePoint
 import java.io.File
 import java.lang.Integer.min
+import kotlin.random.Random
 
 data class MultiAgentCase(
     val map: CaseMap,
@@ -13,26 +14,32 @@ data class MultiAgentCase(
     val obstacles: List<Obstacle>
 ) {
 
+
     companion object {
-        fun fromFile(mapFile: String, pointsFile: String, obstaclesFile: String): MultiAgentCase {
+
+        fun fromFile(mapFile: String, pointsFile: String, cntAgents: Int): MultiAgentCase {
+            val rand = Random(11)
+            /*
             val obstacles = File(obstaclesFile).readLines().chunked(3).map { obsRepr ->
                 val xs = obsRepr[1].split(" ").map {it.toInt()}
                 val ys = obsRepr[2].split(" ").map { it.toInt() }
                 Obstacle(xs.zip(ys).mapIndexed { i, p -> TimePoint(Point(p.second, p.first), i.toLong()) }, 0.5)
             }
 
+             */
+
             val points = File(pointsFile).readLines().chunked(3).map { pointsStr ->
                 val xs = pointsStr[1].split(" ").map {it.toInt()}
                 val ys = pointsStr[2].split(" ").map { it.toInt() }
                 Pair(Point(xs[1], xs[0]), Point(ys[1], ys[0]))
-            }
+            }.shuffled(rand).take(cntAgents)
 
-            val realObs = obstacles.filter {obs -> points.all {(a, b) -> obs.points.first().getPoint() != a && obs.points.first().getPoint() != b && obs.points.last().getPoint() != a && obs.points.last().getPoint() != b}}
+            //val realObs = obstacles.filter {obs -> points.all {(a, b) -> obs.points.first().getPoint() != a && obs.points.first().getPoint() != b && obs.points.last().getPoint() != a && obs.points.last().getPoint() != b}}
 
             return MultiAgentCase(
                 CaseMap.fromFile(mapFile),
                 points,
-                realObs
+                emptyList()
             )
         }
     }

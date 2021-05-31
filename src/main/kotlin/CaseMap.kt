@@ -1,6 +1,6 @@
 import java.io.File
 
-class CaseMap(strMap: String) {
+class CaseMap(private val strMap: String) {
     private val map: Array<Array<Boolean>>
     val h: Int
     val w: Int
@@ -23,6 +23,20 @@ class CaseMap(strMap: String) {
             return false
         }
         return map[point.y][point.x]
+    }
+
+    fun blockMovingPoint(point: Point) {
+        listOf(-1, 0, 1).forEach { i ->
+            listOf(-1, 0, 1).forEach { j ->
+                if (isFree(Point(point.x + i, point.y + j))) {
+                    map[point.y + j][point.x + i] = false
+                }
+            }
+        }
+    }
+
+    fun copy(): CaseMap {
+        return CaseMap(strMap)
     }
 
     fun getGrid(): Array<Array<Boolean>> {

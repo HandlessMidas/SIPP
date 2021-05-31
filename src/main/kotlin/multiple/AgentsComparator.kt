@@ -1,6 +1,7 @@
 package multiple
 
 import Point
+import kotlin.random.Random
 
 abstract class AgentsComparator private constructor() {
 
@@ -48,6 +49,12 @@ abstract class AgentsComparator private constructor() {
                 val a1 = case.startFinishPoints.sumOf { agent1.first.dist2(it.first) }
                 val a2 = case.startFinishPoints.sumOf { agent2.first.dist2(it.first) }
                 return -a1.compareTo(a2)
+            }
+        }
+
+        val RANDOM = object : AgentsComparator() {
+            override fun compare(agent1: Pair<Point, Point>, agent2: Pair<Point, Point>, case: MultiAgentCase): Int {
+                return Random(agent1.hashCode()).nextLong().compareTo(Random(agent2.hashCode()).nextLong())
             }
         }
     }

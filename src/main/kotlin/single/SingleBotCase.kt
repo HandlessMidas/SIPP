@@ -7,6 +7,7 @@ import TimePoint
 import java.io.File
 import java.lang.IllegalStateException
 import java.lang.Math.abs
+import java.util.*
 
 data class SingleBotCase(
     val map: CaseMap,
@@ -15,12 +16,12 @@ data class SingleBotCase(
     val obstacles: List<Obstacle>
 ) {
     companion object {
-        fun fromFile(mapFilePath: String, obsFilePath: String, startPoint: Point, endPoint: Point): SingleBotCase {
+        fun fromFile(mapFilePath: String, obsFilePath: String, startPoint: Point, endPoint: Point, numberOfObs: Int): SingleBotCase {
             val obstacles = File(obsFilePath).readLines().chunked(3).map { obsRepr ->
                 val xs = obsRepr[1].split(" ").map {it.toInt()}
                 val ys = obsRepr[2].split(" ").map { it.toInt() }
                 Obstacle(xs.zip(ys).mapIndexed { i, p -> TimePoint(Point(p.second, p.first), i.toLong()) }, 0.5)
-            }
+            }.shuffled(Random(11)).take(numberOfObs)
 
             obstacles.forEach { obs ->
                 for (i in obs.points.indices) {

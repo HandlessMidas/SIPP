@@ -1,11 +1,15 @@
-import single.AStarWithTimeDimension
-import single.DijkstraWithTimeDimension
-import single.SIPP
-import single.SingleBotCase
+import single.*
 import java.io.File
 import kotlin.random.Random
 
 fun main() {
+    /**
+     * Three types of files in test root:
+     * 1) .map (maps)
+     * 2) .map.scen (points of start and finish)
+     * 3) .obs files (obstacles)
+     */
+
     val testsRoot = "tests"
     val files = listOf(
         "Moscow_2_256",
@@ -16,46 +20,48 @@ fun main() {
         "Milan_2_256",
         "NewYork_2_256"
     )
-    val CNT_RUNS = 20
 
-    val dijFile = File("dijkstraSingle.csv")
+    val cntssOfObstacles = listOf(0, 10, 20, 30, 40, 1000000)
+    val CNT_RUNS = 10
+
     val sippFile = File("sippSingle.csv")
     val astarFile = File("astarSingle.csv")
 
-    dijFile.writeText("")
     sippFile.writeText("")
     astarFile.writeText("");
-    dijFile.writeText("test_name,path_length,open_cnt,closed_cnt,time_ms,obs_cnt\n")
-    sippFile.writeText("test_name,path_length,open_cnt,closed_cnt,time_ms,obs_cnt\n")
-    astarFile.writeText("test_name,path_length,open_cnt,closed_cnt,time_ms,obs_cnt\n")
+    sippFile.writeText("test_name,obs_cnt,path_length,open_cnt,closed_cnt,time_ms\n")
+    astarFile.writeText("test_name,obs_cnt,path_length,open_cnt,closed_cnt,time_ms\n")
 
     val rand = Random(42)
 
-    val dij = DijkstraWithTimeDimension()
     val sipp = SIPP()
     val astar = AStarWithTimeDimension()
 
     files.forEach { file ->
         println("Processing $file")
-        val points = File("$testsRoot/$file.map.scen").readLines().drop(100).dropLast(400).shuffled(rand).take(CNT_RUNS)
+
+        //choosing the start and the finish points
+        val points = File("$testsRoot/$file.map.scen").readLines().drop(100).dropLast(0).shuffled(rand).take(CNT_RUNS)
 
         points.forEachIndexed {ii, pstr ->
-            println("Processing $ii")
-            val t = pstr.split("\\s+".toRegex())
-            val start = Point(t[4].toInt(), t[5].toInt())
-            val finish = Point(t[6].toInt(), t[7].toInt())
+            cntssOfObstacles.forEach { obsCnt ->
+                println("Processing point $ii for $obsCnt obstacles")
+                val t = pstr.split("\\s+".toRegex())
+                val start = Point(t[4].toInt(), t[5].toInt())
+                val finish = Point(t[6].toInt(), t[7].toInt())
 
-            val test = SingleBotCase.fromFile("$testsRoot/$file.map", "tests/$file.obs", start, finish)
+                val test =
+                    SingleBotCase.fromFile("$testsRoot/$file.map", "tests/$file.obs", start, finish, obsCnt)
 
-            val ress = sipp.findPath(test)
+                val ress = sipp.findPath(test)
 
-            if (ress.path != null) {
-                val resd = dij.findPath(test)
-                val resa = astar.findPath(test)
+                //if solution exists
+                if (ress.path != null) {
+                    val resa = astar.findPath(test)
 
-                dijFile.appendText("$file,${resd.path!!.size},${resd.openCnt},${resd.closedCnt},${resd.timeMs},${test.obstacles.size}\n")
-                sippFile.appendText("$file,${ress.path!!.size},${ress.openCnt},${ress.closedCnt},${ress.timeMs},${test.obstacles.size}\n")
-                astarFile.appendText("$file,${resa.path!!.size},${resa.openCnt},${resa.closedCnt},${resa.timeMs},${test.obstacles.size}\n")
+                    sippFile.appendText("$file,${test.obstacles.size},${ress.path!!.size},${ress.openCnt},${ress.closedCnt},${ress.timeMs}\n")
+                    astarFile.appendText("$file,${test.obstacles.size},${resa.path!!.size},${resa.openCnt},${resa.closedCnt},${resa.timeMs}\n")
+                }
             }
         }
     }
