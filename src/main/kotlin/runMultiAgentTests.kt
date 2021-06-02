@@ -19,7 +19,7 @@ fun main() {
     val testsRoot = "tests"
 
     //if more than actual number of agents, then max number of agents is used
-    val cntAgent = listOf(10, 1000000)
+    val cntAgent = listOf(10, 20, 30, 40, 50, 75, 100, )
 
     val testCases = listOf (
         MTest("Start_cliques_first", MultipleAgentSolver(SIPP(), AgentsComparator.START_CLIQUES_FIRST, false), cntAgent),
@@ -40,14 +40,12 @@ fun main() {
 
     files.forEachIndexed { fi, file ->
         println("$fi $file")
-        var shouldSave = true
         val toSave = mutableListOf<Pair<String, String>>()
         for ((name, solver, cnts) in testCases) {
             for (cntAg in cnts) {
                 val test = MultiAgentCase.fromFile("$testsRoot/$file.map", "$testsRoot/ma/$file", cntAg)
                 val res = solver.solve(test)
                 if (res.paths == null) {
-                    shouldSave = false
                     break
                 }
                 toSave.add(
@@ -57,14 +55,9 @@ fun main() {
                     )
                 )
             }
-            if (!shouldSave) {
-                break
-            }
         }
-        if (shouldSave) {
-            toSave.forEach { (name, text) ->
-                File(name).appendText(text)
-            }
+        toSave.forEach { (name, text) ->
+            File(name).appendText(text)
         }
     }
 }

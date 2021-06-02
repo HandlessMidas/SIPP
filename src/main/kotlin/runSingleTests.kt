@@ -12,16 +12,22 @@ fun main() {
 
     val testsRoot = "tests"
     val files = listOf(
-        "Moscow_2_256",
-        "Berlin_2_256",
-        "Boston_2_256",
-        "Denver_2_256",
-        "London_2_256",
-        "Milan_2_256",
-        "NewYork_2_256"
+        "arena",
+        "brc000d",
+        "brc200d",
+        "brc300d",
+        "brc502d",
+        "brc999d",
+        "combat",
+        "den001d",
+        "den011d",
+        "den101d",
+        "den201d",
+        "den203d",
+        "den207d"
     )
 
-    val cntssOfObstacles = listOf(0, 10, 20, 30, 40, 1000000)
+    val cntssOfObstacles = listOf(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 1000000)
     val CNT_RUNS = 10
 
     val sippFile = File("sippSingle.csv")
@@ -41,7 +47,7 @@ fun main() {
         println("Processing $file")
 
         //choosing the start and the finish points
-        val points = File("$testsRoot/$file.map.scen").readLines().drop(100).dropLast(0).shuffled(rand).take(CNT_RUNS)
+        val points = File("$testsRoot/scenes/$file.map.scen").readLines().drop(100).dropLast(0).shuffled(rand).take(CNT_RUNS)
 
         points.forEachIndexed {ii, pstr ->
             cntssOfObstacles.forEach { obsCnt ->
@@ -51,7 +57,7 @@ fun main() {
                 val finish = Point(t[6].toInt(), t[7].toInt())
 
                 val test =
-                    SingleBotCase.fromFile("$testsRoot/$file.map", "tests/$file.obs", start, finish, obsCnt)
+                    SingleBotCase.fromFile("$testsRoot/$file.map", "tests/obs/$file", start, finish, obsCnt)
 
                 val ress = sipp.findPath(test)
 

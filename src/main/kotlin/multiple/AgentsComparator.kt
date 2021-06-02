@@ -10,13 +10,13 @@ abstract class AgentsComparator private constructor() {
     companion object {
         val QUICKEST_FIRST = object : AgentsComparator() {
             override fun compare(agent1: Pair<Point, Point>, agent2: Pair<Point, Point>, case: MultiAgentCase): Int {
-                return agent1.first.dist2(agent2.first).compareTo(agent2.first.dist2(agent2.second))
+                return agent1.first.dist2(agent1.second).compareTo(agent2.first.dist2(agent2.second))
             }
         }
 
         val SLOWEST_FIRST = object : AgentsComparator() {
             override fun compare(agent1: Pair<Point, Point>, agent2: Pair<Point, Point>, case: MultiAgentCase): Int {
-                return -agent1.first.dist2(agent2.first).compareTo(agent2.first.dist2(agent2.second))
+                return -agent1.first.dist2(agent1.second).compareTo(agent2.first.dist2(agent2.second))
             }
         }
 
